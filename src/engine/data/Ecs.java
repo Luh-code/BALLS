@@ -11,78 +11,6 @@ public class Ecs {
 	public static final int MAX_ENTITES = 1000;
 	public static final int MAX_COMPONENTS = 1000;
 
-	public class Entity implements Comparable<Entity>
-	{
-		//----- Members -----
-
-		private final int id;
-
-		//----- Methods -----
-
-		public int getId() {
-			return id;
-		}
-
-		public Entity(int e) {
-			this.id = e;
-		}
-
-    @Override
-    public int compareTo(Entity o) {
-      return this.id-o.getId();
-    }
-  }
-
-	public class Signature implements Cloneable
-	{
-		//----- Members -----
-
-		private BitSet bits = new BitSet();
-
-		//----- Methods -----
-
-		public Signature()
-		{
-
-		}
-
-		public Signature(Signature s)
-		{
-			this.bits = s.getBitSet();
-		}
-
-		public BitSet getBitSet()
-		{
-			return bits;
-		}
-
-		public void setBitSet(BitSet b)
-		{
-			bits = (BitSet) b.clone();
-		}
-
-		public void setBit(int b, boolean v)
-		{
-			bits.set(b, v);
-		}
-
-		public void flipBit(int b)
-		{
-			bits.set(b, !bits.get(b));
-		}
-
-		public void clear()
-		{
-			bits.clear();
-		}
-
-		@Override
-		public Object clone()
-		{
-			return new Signature(this);
-		}
-	}
-
 	public interface IComponentArray {
 		public void entityDestroyed(Entity e);
 	}
@@ -300,16 +228,88 @@ public class Ecs {
 		}
 	}
 
+	public class SystemManager
+	{
+		//----- Members -----
+
+		private Map<String, Signature> signatures = new HashMap<>();
+		private Map<String, System> systems = new HashMap<>();
+
+		//----- Methods -----
+
+		public <T> T registerSystem(Class<? extends T> c)
+		{
+			String typeName = c.getSimpleName();
+
+			if (systems.containsKey(typeName))
+			{
+				logError("Tried registering same system multiple times");
+				assert(false);
+			}
+
+			T system;
+			try {
+				system = c.newInstance();
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			systems.put(typeName, (System) system);
+			return system;
+		}
+
+		public <T> void setSignature(Signature s, Class<? extends T> c)
+		{
+			String typeName = c.getSimpleName();
+
+			if (!systems.containsKey(typeName))
+			{
+				logError("Tried changing signature from unregistered system");
+				return;
+			}
+
+			signatures.put(typeName, s);
+		}
+
+		public void entityDestroyed(Entity e)
+		{
+			for (System s : systems.values())
+			{
+				s.entityErased(e);
+			}
+		}
+
+		public void entitySignatureChanged(Entity e, Signature s)
+		{
+			for (Map.Entry<String, System> entry : systems.entrySet())
+			{
+				if (s.compare(signatures.get(entry.getKey())))
+				{
+					entry.getValue().entities.add(e);
+					entry.getValue().entityRegistered(e);
+				}
+				else
+				{
+					entry.getValue().entities.remove(e);
+					entry.getValue().entityErased(e);
+				}
+			}
+		}
+	}
+
 	//----- Members -----
 
 	private ComponentManager componentManager;
 	private EntityManager entityManager;
+	private SystemManager systemManager;
 
 	//----- Methods -----
 
 	public Ecs() {
 		componentManager = new ComponentManager();
 		entityManager = new EntityManager();
+		systemManager = new SystemManager();
 		logInfo("ECS initialized");
 	}
 
@@ -351,7 +351,7 @@ public class Ecs {
 		sig.setBit(componentManager.getComponentType(c.getClass()), true);
 		entityManager.setSignature(e, sig);
 
-		//systemManager.entitySignatureChanged(e, sig);
+		systemManager.entitySignatureChanged(e, sig);
 	}
 
 	public <T> void removeComponent(Entity e, Class<? extends T> c)
@@ -362,7 +362,7 @@ public class Ecs {
 		sig.setBit(componentManager.getComponentType(c), false);
 		entityManager.setSignature(e, sig);
 
-		//systemManager.entitySignatureChanged(e, sig);
+		systemManager.entitySignatureChanged(e, sig);
 	}
 
 	public <T> T getComponent(Class<? extends T> c, Entity e)
@@ -370,9 +370,28 @@ public class Ecs {
 		return componentManager.getComponent(c, e);
 	}
 
+	//--- System Manager ---
+
+	public <T> T registerSystem(Class<? extends T> c)
+	{
+		return systemManager.registerSystem(c);
+	}
+
+	public <T> void setSystemSignature(Signature s, Class<? extends T> c)
+	{
+		systemManager.setSignature(s, c);
+	}
+
+	public void entitySignatureChanged(Entity e, Signature s)
+	{
+		systemManager.entitySignatureChanged(e, s);
+	}
+
+	//--- General ---
+
 	public void entityDestroyed(Entity e)
 	{
 		componentManager.entityDestroyed(e);
+		systemManager.entityDestroyed(e);
 	}
-
 }
