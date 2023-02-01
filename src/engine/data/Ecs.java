@@ -298,11 +298,102 @@ public class Ecs {
 		}
 	}
 
+	public interface IResourceArray
+	{
+
+	}
+
+	public class ResourceArray<T> implements IResourceArray
+	{
+		//----- Members -----
+
+		private Map<String, T> data = new HashMap<>();
+
+		//----- Methods -----
+
+		public T getResource(String key)
+		{
+			return data.get(key);
+		}
+
+		public void setResource(String key, Object value)
+		{
+			data.put(key, (T) value);
+		}
+
+		public void deleteResource(String key)
+		{
+			data.remove(key);
+		}
+
+		public void deleteAll()
+		{
+			data.clear();
+		}
+	}
+
+	public class ResourceManager
+	{
+		//----- Members -----
+
+		private Map<String, IResourceArray> resourceArrays = new HashMap<>();
+
+		//----- Methods -----
+
+		private <T> ResourceArray<T> getResourceArray(Class<? extends T> c)
+		{
+			String typeName = c.getSimpleName();
+
+			if (!resourceArrays.containsKey(typeName))
+			{
+				logError("Tried to retrieve unregistered recource array");
+				assert(false);
+			}
+
+			return (ResourceArray<T>) resourceArrays.get(typeName);
+		}
+
+		public <T> void registerResourceType(Class<? extends T> c)
+		{
+			String typeName = c.getSimpleName();
+			if (resourceArrays.containsKey(typeName))
+			{
+				logError("Tried to register same recource type multiple times");
+				assert(false);
+			}
+
+			resourceArrays.put(typeName, (IResourceArray) new ResourceArray<T>());
+		}
+
+		public <T> T getResource(Class<? extends T> c)
+		{
+			String typeName = c.getSimpleName();
+			return getResourceArray(c).getResource(typeName);
+		}
+
+		public <T> void setResource(String key, T value)
+		{
+			String typeName = value.getClass().getSimpleName();
+			getResourceArray(value.getClass()).setResource(key, value);
+		}
+
+		public <T> void deleteResource(String key, Class<? extends T> c)
+		{
+			getResourceArray(c).deleteResource(key);
+		}
+
+		public void deleteAll()
+		{
+			resourceArrays.clear();
+		}
+	}
+
 	//----- Members -----
 
 	private ComponentManager componentManager;
 	private EntityManager entityManager;
 	private SystemManager systemManager;
+	private ResourceManager resourceManager;
 
 	//----- Methods -----
 
@@ -310,6 +401,7 @@ public class Ecs {
 		componentManager = new ComponentManager();
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
+		resourceManager = new ResourceManager();
 		logInfo("ECS initialized");
 	}
 
@@ -385,6 +477,33 @@ public class Ecs {
 	public void entitySignatureChanged(Entity e, Signature s)
 	{
 		systemManager.entitySignatureChanged(e, s);
+	}
+
+	//--- Resource Manager ---
+
+	public <T> void registerResourceType(Class<? extends T> c)
+	{
+		resourceManager.registerResourceType(c);
+	}
+
+	public <T> T getResource(Class<? extends T> c)
+	{
+		return resourceManager.getResource(c);
+	}
+
+	public <T> void setResource(String key, T value)
+	{
+		resourceManager.setResource(key, value);
+	}
+
+	public <T> void deleteResource(String key, Class<? extends T> c)
+	{
+		resourceManager.deleteResource(key, c);
+	}
+
+	public void deleteAllResources()
+	{
+		resourceManager.deleteAll();
 	}
 
 	//--- General ---

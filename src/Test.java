@@ -12,6 +12,13 @@ public class Test {
 		logInfo("-------< BALLS >-------");
 		Ecs ecs = new Ecs();
 
+		ecs.registerResourceType(Integer.class);
+		ecs.setResource("TestRes", 27);
+		ecs.setResource("TestRes2", 187);
+
+		ecs.deleteResource("TestRes", Integer.class);
+
+
 		ecs.registerComponent(Test.class);
 
 		TestSystem testSystem = ecs.registerSystem(TestSystem.class);
