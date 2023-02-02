@@ -48,4 +48,9 @@ public class Vec2Int extends VecInt{
     {
         setXY(new Vec2Int(x, y));
     }
+
+    @Override
+    public String toString() {
+        return String.format("[ x:%d | y:%d ]", getX(), getY());
+    }
 }

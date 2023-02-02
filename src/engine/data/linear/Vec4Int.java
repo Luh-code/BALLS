@@ -112,4 +112,9 @@ public class Vec4Int extends Vec3Int{
     {
         setXYZW(new Vec4Int(x, y, z, w));
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s\b| w:%d]", super.toString(), getW());
+    }
 }

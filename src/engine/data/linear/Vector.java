@@ -1,6 +1,7 @@
 package engine.data.linear;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import static utils.Logger.*;
 
@@ -59,5 +60,18 @@ public class Vector <T> implements Comparable<Vector<T>>, Cloneable {
             res = data[i]-o.getData()[i];
         }*/
         return data.length - o.getData().length; // temporary
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for (T e : data)
+        {
+            sb.append(e);
+            sb.append(" | ");
+        }
+        sb.append("\b\b]");
+        return sb.toString();
     }
 }

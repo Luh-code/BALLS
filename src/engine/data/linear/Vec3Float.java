@@ -65,4 +65,9 @@ public class Vec3Float extends Vec2Float{
     {
         setXYZ(new Vec3Float(x, y, z));
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s\b| z:%.3f]", super.toString(), getZ());
+    }
 }

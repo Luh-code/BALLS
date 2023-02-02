@@ -21,10 +21,10 @@ public class Test {
 
 		Vec3Float tv = new Vec3Float(1.0f, 2.0f, 3.0f);
 		tv.add(new Vec3Float(4.0f, 0.0f, 0.0f));
-		logDebug(String.format("Wert von TestVector: %f, %f, %f", tv.getX(), tv.getY(), tv.getZ()));
+		logDebug(String.format("Wert von TestVector: %s", tv.toString()));
 		Vec3Float other = new Vec3Float(1.0f, 0.0f, 2.0f);
 		tv = (Vec3Float) tv.cross(other);
-		logDebug(String.format("Cross product von TestVector zu [%f, %f, %f]: %f, %f, %f", other.getX(), other.getY(), other.getZ(), tv.getX(), tv.getY(), tv.getZ()));
+		logDebug(String.format("Cross product von TestVector zu %s: %s", other.toString(), tv.toString()));
 
 		ecs.registerResourceType(Integer.class);
 		ecs.setResource("TestRes", 27);

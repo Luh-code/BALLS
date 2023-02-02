@@ -112,4 +112,9 @@ public class Vec4Float extends Vec3Float{
     {
         setXYZW(new Vec4Float(x, y, z, w));
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s\b| w:%.3f]", super.toString(), getW());
+    }
 }

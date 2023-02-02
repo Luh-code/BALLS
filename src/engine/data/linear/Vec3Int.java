@@ -65,4 +65,9 @@ public class Vec3Int extends Vec2Int{
     {
         setXYZ(new Vec3Int(x, y, z));
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s\b| z:%d]", super.toString(), getZ());
+    }
 }
