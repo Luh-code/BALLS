@@ -1,7 +1,9 @@
 import engine.data.ecs.Ecs;
 import engine.data.ecs.Entity;
 import engine.data.ecs.Signature;
+import engine.data.linear.Vec3Float;
 import engine.data.linear.Vec3Int;
+import engine.data.linear.VecFloat;
 import engine.opengl.Application;
 
 import static utils.Logger.*;
@@ -17,9 +19,12 @@ public class Test {
 		//Application a = new Application();
 		//a.run();
 
-		Vec3Int tv = new Vec3Int(1, 2, 3);
-		tv.add(new Vec3Int(4, 0, 0));
-		logDebug(String.format("Wert von TestVector: %d, %d, %d", tv.getX(), tv.getY(), tv.getZ()));
+		Vec3Float tv = new Vec3Float(1.0f, 2.0f, 3.0f);
+		tv.add(new Vec3Float(4.0f, 0.0f, 0.0f));
+		logDebug(String.format("Wert von TestVector: %f, %f, %f", tv.getX(), tv.getY(), tv.getZ()));
+		Vec3Float other = new Vec3Float(1.0f, 0.0f, 2.0f);
+		tv = (Vec3Float) tv.cross(other);
+		logDebug(String.format("Cross product von TestVector zu [%f, %f, %f]: %f, %f, %f", other.getX(), other.getY(), other.getZ(), tv.getX(), tv.getY(), tv.getZ()));
 
 		ecs.registerResourceType(Integer.class);
 		ecs.setResource("TestRes", 27);

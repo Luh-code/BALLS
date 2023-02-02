@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 
 import static utils.Logger.*;
 
-public class Vector <T> implements Comparable<Vector<T>> {
+public class Vector <T> implements Comparable<Vector<T>>, Cloneable {
     protected T[] data;
 
     public Vector(int size, Class<? extends T> c)
@@ -42,11 +42,11 @@ public class Vector <T> implements Comparable<Vector<T>> {
     }
     public void setData(T[] val)
     {
-        if (val.length != data.length)
+        /*if (val.length != data.length)
         {
             logError("Unable to set value due to array size difference");
             return;
-        }
+        }*/
         data = val;
     }
 
