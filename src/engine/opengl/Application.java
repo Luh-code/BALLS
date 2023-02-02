@@ -1,5 +1,6 @@
 package engine.opengl;
 
+import engine.data.ecs.Ecs;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -12,13 +13,24 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import static utils.Logger.*;
 
 public class Application {
     private long window;
 
-    public void run() {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+    private Ecs ecs;
 
+    public Ecs getEcs()
+    {
+        return ecs;
+    }
+
+    public Application()
+    {
+        ecs = new Ecs();
+    }
+
+    public void run() {
         init();
         loop();
 
@@ -82,6 +94,8 @@ public class Application {
 
         // Make the window visible
         glfwShowWindow(window);
+
+        logInfo("Application window started");
     }
 
     private void loop() {

@@ -14,10 +14,9 @@ public class Test {
 
 	public static void main(String[] args) {
 		logInfo("-------< BALLS >-------");
-		Ecs ecs = new Ecs();
 
-		//Application a = new Application();
-		//a.run();
+		Application a = new Application();
+		Ecs ecs = a.getEcs();
 
 		Vec3Float tv = new Vec3Float(1.0f, 2.0f, 3.0f);
 		tv.add(new Vec3Float(4.0f, 0.0f, 0.0f));
@@ -44,6 +43,8 @@ public class Test {
 		Entity e2 = ecs.createEntity();
 
 		ecs.addComponent(e1, new Test());
+
+		a.run();
 
 		ecs.removeComponent(e1, Test.class);
 

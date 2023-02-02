@@ -115,6 +115,6 @@ public class Vec4Float extends Vec3Float{
 
     @Override
     public String toString() {
-        return String.format("%s\b| w:%.3f]", super.toString(), getW());
+        return String.format("%s\b| w:%.3f ]", super.toString(), getW());
     }
 }

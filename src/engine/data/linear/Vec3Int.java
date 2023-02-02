@@ -68,6 +68,6 @@ public class Vec3Int extends Vec2Int{
 
     @Override
     public String toString() {
-        return String.format("%s\b| z:%d]", super.toString(), getZ());
+        return String.format("%s\b| z:%d ]", super.toString(), getZ());
     }
 }

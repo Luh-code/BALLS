@@ -115,6 +115,6 @@ public class Vec4Int extends Vec3Int{
 
     @Override
     public String toString() {
-        return String.format("%s\b| w:%d]", super.toString(), getW());
+        return String.format("%s\b| w:%d ]", super.toString(), getW());
     }
 }
