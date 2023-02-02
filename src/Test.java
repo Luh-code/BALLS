@@ -1,53 +1,72 @@
+import engine.data.components.Mesh;
 import engine.data.ecs.Ecs;
 import engine.data.ecs.Entity;
 import engine.data.ecs.Signature;
 import engine.data.linear.Vec3Float;
 import engine.data.linear.Vec3Int;
 import engine.data.linear.VecFloat;
+import engine.data.object.IMeshData;
+import engine.data.object.MeshData;
+import engine.data.object.Vertex;
 import engine.opengl.Application;
+import engine.opengl.Renderer;
 
 import static utils.Logger.*;
 
 public class Test {
 
-	int val = 69;
-
 	public static void main(String[] args) {
 		logInfo("-------< BALLS >-------");
+
+		//--- General Setup ---
 
 		Application a = new Application();
 		Ecs ecs = a.getEcs();
 
-		Vec3Float tv = new Vec3Float(1.0f, 2.0f, 3.0f);
-		tv.add(new Vec3Float(4.0f, 0.0f, 0.0f));
-		logDebug(String.format("Wert von TestVector: %s", tv.toString()));
-		Vec3Float other = new Vec3Float(1.0f, 0.0f, 2.0f);
-		tv = (Vec3Float) tv.cross(other);
-		logDebug(String.format("Cross product von TestVector zu %s: %s", other.toString(), tv.toString()));
+		//--- Register Resources ---
 
-		ecs.registerResourceType(Integer.class);
-		ecs.setResource("TestRes", 27);
-		ecs.setResource("TestRes2", 187);
+		ecs.registerResourceType(MeshData.class);
 
-		ecs.deleteResource("TestRes", Integer.class);
+		//--- Register Components ---
 
+		ecs.registerComponent(Mesh.class);
 
-		ecs.registerComponent(Test.class);
+		//--- Register Systems ---
 
-		TestSystem testSystem = ecs.registerSystem(TestSystem.class);
-		Signature sig = new Signature();
-		sig.setBit(ecs.getComponentType(Test.class), true);
-		ecs.setSystemSignature(sig, TestSystem.class);
+		Renderer renderer = Renderer.registerSystem(ecs);
+		renderer.init(ecs);
+
+		//--- Create Resources ---
+
+		MeshData tri = new MeshData();
+		tri.setVertices(new Vertex[] {
+			new Vertex(-0.5f, -0.5f, 0.0f),
+			new Vertex(0.5f, -0.5f, 0.0f),
+			new Vertex(0.5f, 0.5f, 0.0f),
+		}, false);
+		tri.setIndices(new int[] {0, 1, 2}, false);
+		ecs.setResource("Triangle",  tri);
+
+		//--- Create Entities ---
 
 		Entity e1 = ecs.createEntity();
 		Entity e2 = ecs.createEntity();
 
-		ecs.addComponent(e1, new Test());
+		//--- Create Components ---
+
+		ecs.addComponent(e1, new Mesh(ecs.getResource("Triangle", MeshData.class)));
+
+		//--- Run App ---
 
 		a.run();
 
-		ecs.removeComponent(e1, Test.class);
+		//--- Remove Components ---
 
-    logInfo("-----------------------");
+		ecs.removeComponent(e1, Mesh.class);
+
+		//--- Remove Resources ---
+		ecs.deleteAllResources();
+
+		logInfo("-----------------------");
 	}
 }

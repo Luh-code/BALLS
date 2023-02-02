@@ -1,8 +1,9 @@
 package engine.data.ecs;
 
 //import java.sql.Array;
+
 import java.util.*;
-  import java.lang.reflect.Array;
+import java.lang.reflect.Array;
 
 import static utils.Logger.*;
 
@@ -30,10 +31,8 @@ public class Ecs {
 			array = (T[]) Array.newInstance(impl, MAX_COMPONENTS);
 		}
 
-		public void insertData(Entity e, Object component)
-		{
-			if (entityToIndexMap.containsKey(e))
-			{
+		public void insertData(Entity e, Object component) {
+			if (entityToIndexMap.containsKey(e)) {
 				logError("Tried adding same component to entity multiple times");
 				return;
 			}
@@ -45,16 +44,14 @@ public class Ecs {
 			++size;
 		}
 
-		public void removeData(Entity e)
-		{
-			if (!entityToIndexMap.containsKey(e))
-			{
+		public void removeData(Entity e) {
+			if (!entityToIndexMap.containsKey(e)) {
 				logError("Tried removing component from non-existent entity");
 				return;
 			}
 
 			int removedIdx = entityToIndexMap.get(e);
-			int lastIdx = size-1;
+			int lastIdx = size - 1;
 			array[removedIdx] = array[lastIdx];
 			array[removedIdx] = null;
 
@@ -68,22 +65,18 @@ public class Ecs {
 			--size;
 		}
 
-		public T getData(Entity e)
-		{
-			if (!entityToIndexMap.containsKey(e))
-			{
+		public T getData(Entity e) {
+			if (!entityToIndexMap.containsKey(e)) {
 				logError("Tried getting data from unregistered entity");
-				assert(false);
+				assert (false);
 			}
 
 			return array[entityToIndexMap.get(e.getId())];
 		}
 
 		@Override
-		public void entityDestroyed(Entity e)
-		{
-			if (entityToIndexMap.containsKey(e))
-			{
+		public void entityDestroyed(Entity e) {
+			if (entityToIndexMap.containsKey(e)) {
 				removeData(e);
 			}
 		}
@@ -100,25 +93,21 @@ public class Ecs {
 
 		//----- Methods -----
 
-		private <T> ComponentArray<T> getComponentArray(Class<? extends T> c)
-		{
+		private <T> ComponentArray<T> getComponentArray(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (!componentTypes.containsKey(typeName))
-			{
+			if (!componentTypes.containsKey(typeName)) {
 				logError("Tried to retrieve unregistered component array");
-				assert(false);
+				assert (false);
 			}
 
 			return (ComponentArray<T>) componentArrays.get(typeName);
 		}
 
-		public <T> void registerComponent(Class<? extends T> c)
-		{
+		public <T> void registerComponent(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (componentTypes.containsKey(typeName))
-			{
+			if (componentTypes.containsKey(typeName)) {
 				logError("Tried to register component type multiple times");
 				return;
 			}
@@ -129,36 +118,30 @@ public class Ecs {
 			nextComponentType++;
 		}
 
-		public <T> int getComponentType(Class<? extends T> c)
-		{
+		public <T> int getComponentType(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (!componentTypes.containsKey(typeName))
-			{
+			if (!componentTypes.containsKey(typeName)) {
 				logError("Tried to retrieve type of unregistered component type");
-				assert(false);
+				assert (false);
 			}
 
 			return componentTypes.get(typeName);
 		}
 
-		public <T> void addComponent(Entity e, T c)
-		{
+		public <T> void addComponent(Entity e, T c) {
 			getComponentArray(c.getClass()).insertData(e, c);
 		}
 
-		public <T> void removeComponent(Class<? extends T> c, Entity e)
-		{
+		public <T> void removeComponent(Class<? extends T> c, Entity e) {
 			getComponentArray(c).removeData(e);
 		}
 
-		public <T> T getComponent(Class<? extends T> c, Entity e)
-		{
+		public <T> T getComponent(Class<? extends T> c, Entity e) {
 			return getComponentArray(c).getData(e);
 		}
 
-		public void entityDestroyed(Entity e)
-		{
+		public void entityDestroyed(Entity e) {
 			for (int i = 0; i < componentArrays.size(); i++) {
 				componentArrays.get(i).entityDestroyed(e);
 			}
@@ -176,39 +159,35 @@ public class Ecs {
 
 		public EntityManager() {
 			for (int i = 0; i < MAX_ENTITES; i++) {
-        availableEntities.offer(new Entity(i));
+				availableEntities.offer(new Entity(i));
 				signatures[i] = new Signature();
 			}
 		}
 
 		public Entity createEntity() {
 			if (livingEntityCount >= MAX_ENTITES) {
-        logError("Tried to create new Entity, when entity limit is reached!");
+				logError("Tried to create new Entity, when entity limit is reached!");
 				assert (false);
 			}
 			Entity e = availableEntities.poll();
-      ++livingEntityCount;
-      return e;
+			++livingEntityCount;
+			return e;
 		}
 
-    public void destroyEntity(Entity e)
-    {
-      if (e.getId() >= MAX_ENTITES)
-      {
-        logError("Tried to delete out-of-range entity: " + e.getId());
-        return;
-      }
+		public void destroyEntity(Entity e) {
+			if (e.getId() >= MAX_ENTITES) {
+				logError("Tried to delete out-of-range entity: " + e.getId());
+				return;
+			}
 
 			signatures[e.getId()].clear();
 
 			availableEntities.offer(e);
 			--livingEntityCount;
-    }
+		}
 
-		public void setSignature(Entity e, Signature b)
-		{
-			if (e.getId() >= MAX_ENTITES)
-			{
+		public void setSignature(Entity e, Signature b) {
+			if (e.getId() >= MAX_ENTITES) {
 				logError("Tried to delete out-of-range entity: " + e.getId());
 				return;
 			}
@@ -216,20 +195,17 @@ public class Ecs {
 			signatures[e.getId()] = (Signature) b.clone();
 		}
 
-		public Signature getSignature(Entity e)
-		{
-			if (e.getId() >= MAX_ENTITES)
-			{
+		public Signature getSignature(Entity e) {
+			if (e.getId() >= MAX_ENTITES) {
 				logError("Tried to delete out-of-range entity: " + e.getId());
-				assert(false);
+				assert (false);
 			}
 
 			return signatures[e.getId()];
 		}
 	}
 
-	public class SystemManager
-	{
+	public class SystemManager {
 		//----- Members -----
 
 		private Map<String, Signature> signatures = new HashMap<>();
@@ -237,14 +213,12 @@ public class Ecs {
 
 		//----- Methods -----
 
-		public <T> T registerSystem(Class<? extends T> c)
-		{
+		public <T> T registerSystem(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (systems.containsKey(typeName))
-			{
+			if (systems.containsKey(typeName)) {
 				logError("Tried registering same system multiple times");
-				assert(false);
+				assert (false);
 			}
 
 			T system;
@@ -259,12 +233,10 @@ public class Ecs {
 			return system;
 		}
 
-		public <T> void setSignature(Signature s, Class<? extends T> c)
-		{
+		public <T> void setSignature(Signature s, Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (!systems.containsKey(typeName))
-			{
+			if (!systems.containsKey(typeName)) {
 				logError("Tried changing signature from unregistered system");
 				return;
 			}
@@ -272,25 +244,18 @@ public class Ecs {
 			signatures.put(typeName, s);
 		}
 
-		public void entityDestroyed(Entity e)
-		{
-			for (System s : systems.values())
-			{
+		public void entityDestroyed(Entity e) {
+			for (System s : systems.values()) {
 				s.entityErased(e);
 			}
 		}
 
-		public void entitySignatureChanged(Entity e, Signature s)
-		{
-			for (Map.Entry<String, System> entry : systems.entrySet())
-			{
-				if (s.compare(signatures.get(entry.getKey())))
-				{
+		public void entitySignatureChanged(Entity e, Signature s) {
+			for (Map.Entry<String, System> entry : systems.entrySet()) {
+				if (s.compare(signatures.get(entry.getKey()))) {
 					entry.getValue().entities.add(e);
 					entry.getValue().entityRegistered(e);
-				}
-				else
-				{
+				} else {
 					entry.getValue().entities.remove(e);
 					entry.getValue().entityErased(e);
 				}
@@ -298,92 +263,75 @@ public class Ecs {
 		}
 	}
 
-	public interface IResourceArray
-	{
+	public interface IResourceArray {
 
 	}
 
-	public class ResourceArray<T> implements IResourceArray
-	{
+	public class ResourceArray<T> implements IResourceArray {
 		//----- Members -----
 
 		private Map<String, T> data = new HashMap<>();
 
 		//----- Methods -----
 
-		public T getResource(String key)
-		{
+		public T getResource(String key) {
 			return data.get(key);
 		}
 
-		public void setResource(String key, Object value)
-		{
+		public void setResource(String key, Object value) {
 			data.put(key, (T) value);
 		}
 
-		public void deleteResource(String key)
-		{
+		public void deleteResource(String key) {
 			data.remove(key);
 		}
 
-		public void deleteAll()
-		{
+		public void deleteAll() {
 			data.clear();
 		}
 	}
 
-	public class ResourceManager
-	{
+	public class ResourceManager {
 		//----- Members -----
 
 		private Map<String, IResourceArray> resourceArrays = new HashMap<>();
 
 		//----- Methods -----
 
-		private <T> ResourceArray<T> getResourceArray(Class<? extends T> c)
-		{
+		private <T> ResourceArray<T> getResourceArray(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
 
-			if (!resourceArrays.containsKey(typeName))
-			{
+			if (!resourceArrays.containsKey(typeName)) {
 				logError("Tried to retrieve unregistered recource array");
-				assert(false);
+				assert (false);
 			}
 
 			return (ResourceArray<T>) resourceArrays.get(typeName);
 		}
 
-		public <T> void registerResourceType(Class<? extends T> c)
-		{
+		public <T> void registerResourceType(Class<? extends T> c) {
 			String typeName = c.getSimpleName();
-			if (resourceArrays.containsKey(typeName))
-			{
+			if (resourceArrays.containsKey(typeName)) {
 				logError("Tried to register same recource type multiple times");
-				assert(false);
+				assert (false);
 			}
 
 			resourceArrays.put(typeName, (IResourceArray) new ResourceArray<T>());
 		}
 
-		public <T> T getResource(Class<? extends T> c)
-		{
-			String typeName = c.getSimpleName();
-			return getResourceArray(c).getResource(typeName);
+		public <T> T getResource(String key, Class<? extends T> c) {
+			return getResourceArray(c).getResource(key);
 		}
 
-		public <T> void setResource(String key, T value)
-		{
-			String typeName = value.getClass().getSimpleName();
+		public <T> void setResource(String key, T value) {
 			getResourceArray(value.getClass()).setResource(key, value);
 		}
 
-		public <T> void deleteResource(String key, Class<? extends T> c)
-		{
+		public <T> void deleteResource(String key, Class<? extends T> c) {
 			getResourceArray(c).deleteResource(key);
 		}
 
-		public void deleteAll()
-		{
+		public void deleteAll() {
 			resourceArrays.clear();
 		}
 	}
@@ -407,36 +355,32 @@ public class Ecs {
 
 	//--- Entity Manager ---
 
-	public Entity createEntity()
-	{
+	public Entity createEntity() {
 		return entityManager.createEntity();
 	}
-	public void destroyEntity(Entity e)
-	{
+
+	public void destroyEntity(Entity e) {
 		entityManager.destroyEntity(e);
 	}
-	public void setSignature(Entity e, Signature s)
-	{
+
+	public void setSignature(Entity e, Signature s) {
 		entityManager.setSignature(e, s);
 	}
-	public Signature getSignature(Entity e)
-	{
+
+	public Signature getSignature(Entity e) {
 		return entityManager.getSignature(e);
 	}
 
 	//--- Component Manager ---
-	public <T> void registerComponent(Class<? extends T> c)
-	{
+	public <T> void registerComponent(Class<? extends T> c) {
 		componentManager.registerComponent(c);
 	}
 
-	public <T> int getComponentType(Class<? extends T> c)
-	{
+	public <T> int getComponentType(Class<? extends T> c) {
 		return componentManager.getComponentType(c);
 	}
 
-	public <T> void addComponent(Entity e, T c)
-	{
+	public <T> void addComponent(Entity e, T c) {
 		componentManager.addComponent(e, c);
 
 		Signature sig = entityManager.getSignature(e);
@@ -446,8 +390,7 @@ public class Ecs {
 		systemManager.entitySignatureChanged(e, sig);
 	}
 
-	public <T> void removeComponent(Entity e, Class<? extends T> c)
-	{
+	public <T> void removeComponent(Entity e, Class<? extends T> c) {
 		componentManager.removeComponent(c, e);
 
 		Signature sig = entityManager.getSignature(e);
@@ -457,59 +400,49 @@ public class Ecs {
 		systemManager.entitySignatureChanged(e, sig);
 	}
 
-	public <T> T getComponent(Class<? extends T> c, Entity e)
-	{
+	public <T> T getComponent(Class<? extends T> c, Entity e) {
 		return componentManager.getComponent(c, e);
 	}
 
 	//--- System Manager ---
 
-	public <T> T registerSystem(Class<? extends T> c)
-	{
+	public <T> T registerSystem(Class<? extends T> c) {
 		return systemManager.registerSystem(c);
 	}
 
-	public <T> void setSystemSignature(Signature s, Class<? extends T> c)
-	{
+	public <T> void setSystemSignature(Signature s, Class<? extends T> c) {
 		systemManager.setSignature(s, c);
 	}
 
-	public void entitySignatureChanged(Entity e, Signature s)
-	{
+	public void entitySignatureChanged(Entity e, Signature s) {
 		systemManager.entitySignatureChanged(e, s);
 	}
 
 	//--- Resource Manager ---
 
-	public <T> void registerResourceType(Class<? extends T> c)
-	{
+	public <T> void registerResourceType(Class<? extends T> c) {
 		resourceManager.registerResourceType(c);
 	}
 
-	public <T> T getResource(Class<? extends T> c)
-	{
-		return resourceManager.getResource(c);
+	public <T> T getResource(String key, Class<? extends T> c) {
+		return resourceManager.getResource(key, c);
 	}
 
-	public <T> void setResource(String key, T value)
-	{
+	public <T> void setResource(String key, T value) {
 		resourceManager.setResource(key, value);
 	}
 
-	public <T> void deleteResource(String key, Class<? extends T> c)
-	{
+	public <T> void deleteResource(String key, Class<? extends T> c) {
 		resourceManager.deleteResource(key, c);
 	}
 
-	public void deleteAllResources()
-	{
+	public void deleteAllResources() {
 		resourceManager.deleteAll();
 	}
 
 	//--- General ---
 
-	public void entityDestroyed(Entity e)
-	{
+	public void entityDestroyed(Entity e) {
 		componentManager.entityDestroyed(e);
 		systemManager.entityDestroyed(e);
 	}

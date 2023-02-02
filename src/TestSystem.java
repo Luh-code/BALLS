@@ -14,8 +14,7 @@ public class TestSystem extends System {
 	}
 
 	@Override
-	public void entityErased(Entity e)
-	{
+	public void entityErased(Entity e) {
 		logDebug("Entity erased from TestSystem: " + e.getId());
 	}
 }

@@ -10,8 +10,7 @@ public class System {
 
 	//----- Methods -----
 
-	public System()
-	{
+	public System() {
 
 	}
 
