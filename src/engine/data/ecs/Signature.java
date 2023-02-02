@@ -1,8 +1,8 @@
-package engine.data;
+package engine.data.ecs;
 
 import java.util.BitSet;
 
-import static engine.data.Ecs.MAX_COMPONENTS;
+import static engine.data.ecs.Ecs.MAX_COMPONENTS;
 
 public class Signature implements Cloneable {
 	//----- Members -----

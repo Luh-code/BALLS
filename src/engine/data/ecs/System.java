@@ -1,4 +1,4 @@
-package engine.data;
+package engine.data.ecs;
 
 import java.util.HashSet;
 import java.util.Set;

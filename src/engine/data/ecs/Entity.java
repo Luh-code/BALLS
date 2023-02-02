@@ -1,4 +1,4 @@
-package engine.data;
+package engine.data.ecs;
 
 public class Entity implements Comparable<Entity> {
 	//----- Members -----

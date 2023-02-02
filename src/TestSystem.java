@@ -1,5 +1,5 @@
-import engine.data.Entity;
-import engine.data.System;
+import engine.data.ecs.Entity;
+import engine.data.ecs.System;
 
 import static utils.Logger.logDebug;
 

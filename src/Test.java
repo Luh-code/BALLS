@@ -1,6 +1,8 @@
-import engine.data.Ecs;
-import engine.data.Entity;
-import engine.data.Signature;
+import engine.data.ecs.Ecs;
+import engine.data.ecs.Entity;
+import engine.data.ecs.Signature;
+import engine.data.linear.Vec3Int;
+import engine.opengl.Application;
 
 import static utils.Logger.*;
 
@@ -11,6 +13,13 @@ public class Test {
 	public static void main(String[] args) {
 		logInfo("-------< BALLS >-------");
 		Ecs ecs = new Ecs();
+
+		//Application a = new Application();
+		//a.run();
+
+		Vec3Int tv = new Vec3Int(1, 2, 3);
+		tv.add(new Vec3Int(4, 0, 0));
+		logDebug(String.format("Wert von TestVector: %d, %d, %d", tv.getX(), tv.getY(), tv.getZ()));
 
 		ecs.registerResourceType(Integer.class);
 		ecs.setResource("TestRes", 27);
