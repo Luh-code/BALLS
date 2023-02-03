@@ -71,7 +71,7 @@ public class Ecs {
 				assert (false);
 			}
 
-			return array[entityToIndexMap.get(e.getId())];
+			return array[entityToIndexMap.get(e)];
 		}
 
 		@Override
@@ -257,7 +257,8 @@ public class Ecs {
 					entry.getValue().entityRegistered(e);
 				} else {
 					entry.getValue().entities.remove(e);
-					entry.getValue().entityErased(e);
+					if(entry.getValue().entities.contains(e))
+						entry.getValue().entityErased(e);
 				}
 			}
 		}

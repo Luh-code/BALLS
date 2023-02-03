@@ -1,5 +1,6 @@
 package engine.opengl;
 
+import engine.data.components.Material;
 import engine.data.components.Mesh;
 import engine.data.ecs.Ecs;
 import engine.data.ecs.Entity;
@@ -45,6 +46,7 @@ public class Renderer extends System {
 		Renderer r = ecs.registerSystem(Renderer.class);
 		Signature sig = new Signature();
 		sig.setBit(ecs.getComponentType(Mesh.class), true);
+		sig.setBit(ecs.getComponentType(Material.class), true);
 		ecs.setSystemSignature(sig, Renderer.class);
 		return r;
 	}

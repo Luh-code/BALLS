@@ -1,15 +1,14 @@
+import engine.data.components.Material;
 import engine.data.components.Mesh;
 import engine.data.ecs.Ecs;
 import engine.data.ecs.Entity;
-import engine.data.ecs.Signature;
-import engine.data.linear.Vec3Float;
-import engine.data.linear.Vec3Int;
-import engine.data.linear.VecFloat;
-import engine.data.object.IMeshData;
+import engine.data.object.MaterialData;
 import engine.data.object.MeshData;
 import engine.data.object.Vertex;
 import engine.opengl.Application;
 import engine.opengl.Renderer;
+import engine.opengl.shader.Shader;
+import engine.opengl.shader.ShaderCompiler;
 
 import static utils.Logger.*;
 
@@ -26,10 +25,13 @@ public class Test {
 		//--- Register Resources ---
 
 		ecs.registerResourceType(MeshData.class);
+		ecs.registerResourceType(Shader.class);
+		ecs.registerResourceType(MaterialData.class);
 
 		//--- Register Components ---
 
 		ecs.registerComponent(Mesh.class);
+		ecs.registerComponent(Material.class);
 
 		//--- Register Systems ---
 
@@ -47,6 +49,11 @@ public class Test {
 		tri.setIndices(new int[] {0, 1, 2}, false);
 		ecs.setResource("Triangle",  tri);
 
+		ecs.setResource("BasicVertexShader", ShaderCompiler.compileVertexShader(ShaderCompiler.readShader("src/shaders/basic.vert")));
+		ecs.setResource("BasicFragmentShader", ShaderCompiler.compileFragmentShader(ShaderCompiler.readShader("src/shaders/basic.frag")));
+
+		ecs.setResource("BasicMaterial", new MaterialData(ecs.getResource("BasicVertexShader", Shader.class), ecs.getResource("BasicFragmentShader", Shader.class)));
+
 		//--- Create Entities ---
 
 		Entity e1 = ecs.createEntity();
@@ -55,6 +62,7 @@ public class Test {
 		//--- Create Components ---
 
 		ecs.addComponent(e1, new Mesh(ecs.getResource("Triangle", MeshData.class)));
+		ecs.addComponent(e1, new Material(ecs.getResource("BasicMaterial", MaterialData.class)));
 
 		//--- Run App ---
 
@@ -63,6 +71,12 @@ public class Test {
 		//--- Remove Components ---
 
 		ecs.removeComponent(e1, Mesh.class);
+		ecs.removeComponent(e1, Material.class);
+
+		//--- Remove Entities ---
+
+		ecs.destroyEntity(e1);
+		ecs.destroyEntity(e2);
 
 		//--- Remove Resources ---
 		ecs.deleteAllResources();
