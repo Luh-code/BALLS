@@ -19,10 +19,7 @@ public class Application {
 	private long window;
 
 	private Ecs ecs;
-
-	public Ecs getEcs() {
-		return ecs;
-	}
+	private Renderer renderer;
 
 	public Application() {
 		ecs = new Ecs();
@@ -59,7 +56,7 @@ public class Application {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(300, 300, "BALLS", NULL, NULL);
+		window = glfwCreateWindow(800, 600, "BALLS", NULL, NULL);
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
@@ -101,22 +98,39 @@ public class Application {
 		// LWJGL detects the context that is current in the current thread,
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
-		GL.createCapabilities();
+		GLCapabilities caps = GL.createCapabilities();
 
 		// Set the clear color
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-		logInfo("Application window started");
+		glViewport(0,0, 800, 600);
+		glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
+		logInfo("Application window started");
 	}
 
 	private void loop() {
 		while (!glfwWindowShouldClose(window)) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			glfwSwapBuffers(window);
+			renderer.render();
 
 			glfwPollEvents();
+			glfwSwapBuffers(window);
 		}
 	}
 
+	public Ecs getEcs() {
+		return ecs;
+	}
+
+	public Renderer getRenderer() {
+		return renderer;
+	}
+
+	public void setRenderer(Renderer renderer) {
+		this.renderer = renderer;
+	}
+
+	public long getWindow() {
+		return window;
+	}
 }

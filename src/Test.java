@@ -9,6 +9,7 @@ import engine.opengl.Application;
 import engine.opengl.Renderer;
 import engine.opengl.shader.Shader;
 import engine.opengl.shader.ShaderCompiler;
+import engine.opengl.shader.ShaderProgram;
 
 import static utils.Logger.*;
 
@@ -27,6 +28,7 @@ public class Test {
 		ecs.registerResourceType(MeshData.class);
 		ecs.registerResourceType(Shader.class);
 		ecs.registerResourceType(MaterialData.class);
+		ecs.registerResourceType(ShaderProgram.class);
 
 		//--- Register Components ---
 
@@ -35,7 +37,8 @@ public class Test {
 
 		//--- Register Systems ---
 
-		Renderer renderer = Renderer.registerSystem(ecs);
+		a.setRenderer(Renderer.registerSystem(ecs));
+		Renderer renderer = a.getRenderer();
 		renderer.init(ecs);
 
 		//--- Create Resources ---
@@ -52,7 +55,16 @@ public class Test {
 		ecs.setResource("BasicVertexShader", ShaderCompiler.compileVertexShader(ShaderCompiler.readShader("src/shaders/basic.vert")));
 		ecs.setResource("BasicFragmentShader", ShaderCompiler.compileFragmentShader(ShaderCompiler.readShader("src/shaders/basic.frag")));
 
-		ecs.setResource("BasicMaterial", new MaterialData(ecs.getResource("BasicVertexShader", Shader.class), ecs.getResource("BasicFragmentShader", Shader.class)));
+		ecs.setResource("BasicShaderProgram", ShaderCompiler.createShaderProgram(
+			ecs.getResource("BasicVertexShader", Shader.class),
+			ecs.getResource("BasicFragmentShader", Shader.class)
+		));
+
+		ecs.setResource("BasicMaterial", new MaterialData(
+			ecs.getResource("BasicVertexShader", Shader.class),
+			ecs.getResource("BasicFragmentShader", Shader.class),
+			ecs.getResource("BasicShaderProgram", ShaderProgram.class)
+		));
 
 		//--- Create Entities ---
 
