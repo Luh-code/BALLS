@@ -401,7 +401,9 @@ public class Ecs {
 	}
 
 	public <T> T getComponent(Class<? extends T> c, Entity e) {
-		return componentManager.getComponent(c, e);
+		T temp = componentManager.getComponent(c, e);
+		//System.out.println();
+		return temp;
 	}
 
 	//--- System Manager ---
